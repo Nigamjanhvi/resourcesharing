@@ -144,7 +144,6 @@ userSchema.methods.createEmailVerificationToken = function () {
 
 // Index for search performance
 userSchema.index({ university: 1 });
-userSchema.index({ email: 1 });
 userSchema.index({ trustScore: -1 });
 
 const User = mongoose.model('User', userSchema);
