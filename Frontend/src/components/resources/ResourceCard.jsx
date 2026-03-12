@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Badge from '../common/Badge';
-import { timeAgo, formatPrice, getInitials, getImageUrl } from '../../utils/helpers';
+import { timeAgo, getInitials, getImageUrl } from '../../utils/helpers';
 
 const CATEGORY_ICONS = {
   Books: '📚', Notes: '📝', Electronics: '💻',

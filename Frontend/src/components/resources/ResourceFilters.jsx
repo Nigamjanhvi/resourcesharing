@@ -1,5 +1,5 @@
 import React from 'react';
-import { CATEGORIES, CONDITIONS, PRICE_TYPES, SORT_OPTIONS } from '../../utils/constants';
+import { CATEGORIES, PRICE_TYPES, SORT_OPTIONS } from '../../utils/constants';
 
 export default function ResourceFilters({ filters, onChange, onReset, total }) {
   const handle = (key, value) => onChange({ ...filters, [key]: value });
