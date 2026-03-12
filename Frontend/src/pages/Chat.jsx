@@ -36,16 +36,23 @@ export default function Chat() {
     load();
   }, [conversationId]);
 
-  useEffect(() => {
-    if (!conversationId) return;
-    joinConversation(conversationId);
-    const unsub = onMessage((msg) => addMessage(msg));
-    const unsubTyping = onTyping(({ userId: uid, isTyping: t }) => {
-      if (uid !== user?._id) setTypingUser(t ? uid : null);
-    });
-    return () => { leaveConversation(conversationId); unsub?.(); unsubTyping?.(); };
-  }, [conversationId]);
+ useEffect(() => {
+  if (!conversationId) return;
 
+  joinConversation(conversationId);
+
+  const unsub = onMessage((msg) => addMessage(msg));
+
+  const unsubTyping = onTyping(({ userId: uid, isTyping: t }) => {
+    if (uid !== user?._id) setTypingUser(t ? uid : null);
+  });
+
+  return () => {
+    leaveConversation(conversationId);
+    unsub?.();
+    unsubTyping?.();
+  };
+}, [conversationId, joinConversation, leaveConversation, onMessage, onTyping, addMessage, user?._id]);
   // Search users for new conversation
   useEffect(() => {
     if (!searchQuery.trim()) { setSearchResults([]); return; }
