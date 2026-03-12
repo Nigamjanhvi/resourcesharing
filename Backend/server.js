@@ -19,6 +19,7 @@ const socketAuth = require('./middleware/socketAuth');
 const socketHandler = require('./socket/socketHandler');
 
 const app = express();
+app.set("trust proxy", 1); 
 const httpServer = createServer(app);
 
 
