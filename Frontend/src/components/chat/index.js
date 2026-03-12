@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { format } from "date-fns";
 
 import Spinner from "../common/Spinner";
-import { timeAgo, getInitials } from "../../utils/helpers";
+import { getInitials } from "../../utils/helpers";
 
 // chat components
 // Message Bubble
