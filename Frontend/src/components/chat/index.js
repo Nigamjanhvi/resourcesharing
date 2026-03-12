@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import Spinner from "../common/Spinner";
 import { timeAgo, getInitials } from "../../utils/helpers";
 
-
+// chat components
 // Message Bubble
 export function MessageBubble({ message, isOwn }) {
   return (
