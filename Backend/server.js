@@ -6,8 +6,7 @@ const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
-require('dotenv').config();
-
+require("dotenv").config();
 const authRoutes = require('./routes/auth');
 const resourceRoutes = require('./routes/resources');
 const requestRoutes = require('./routes/requests');
