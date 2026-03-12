@@ -10,6 +10,28 @@ const { uploadFile } = require('../utils/cloudinary');
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
+// ─── GET /api/users/search ────────────────────────────────────────────────────
+router.get('/search', authenticate, async (req, res) => {
+  try {
+    const q = req.query.q?.trim();
+    if (!q || q.length < 1) {
+      return res.json({ success: true, data: { users: [] } });
+    }
+    const regex = new RegExp(q, 'i');
+    const users = await User.find({
+      _id: { $ne: req.user._id },
+      isActive: true,
+      $or: [{ firstName: regex }, { lastName: regex }, { email: regex }],
+    })
+      .select('firstName lastName profilePicture university department')
+      .limit(10);
+    res.json({ success: true, data: { users } });
+  } catch (err) {
+    console.error('User search error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // ─── GET /api/users/dashboard ─────────────────────────────────────────────────
 router.get('/dashboard', authenticate, async (req, res) => {
   try {

@@ -27,6 +27,7 @@ const loginValidation = [
 
 // POST /api/auth/register
 router.post('/register', registerValidation, async (req, res, next) => {
+  console.log('📝 Registration attempt:', req.body.email);
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -45,6 +46,7 @@ router.post('/register', registerValidation, async (req, res, next) => {
     }
 
     // Create user
+    console.log('💾 Creating user in DB...');
     const user = await User.create({
       firstName,
       lastName,
@@ -54,18 +56,13 @@ router.post('/register', registerValidation, async (req, res, next) => {
       department,
       year,
     });
+    console.log('✅ User created:', user._id);
 
     // Generate email verification token
+    console.log('🔑 Generating verification token...');
     const verificationToken = user.createEmailVerificationToken();
     await user.save({ validateBeforeSave: false });
-
-    // Send verification email (non-blocking)
-    try {
-      await sendVerificationEmail(user.email, user.firstName, verificationToken);
-    } catch (emailError) {
-      console.error('Email sending failed:', emailError);
-      // Don't fail registration if email fails
-    }
+    console.log('✅ Token saved to user');
 
     const token = generateToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
@@ -73,11 +70,17 @@ router.post('/register', registerValidation, async (req, res, next) => {
     // Remove password from response
     user.password = undefined;
 
+    // Send response IMMEDIATELY — don't wait for email
     res.status(201).json({
       success: true,
       message: 'Account created successfully. Please verify your email.',
       data: { user, token, refreshToken },
     });
+
+    // Send verification email in background (fire-and-forget)
+    sendVerificationEmail(user.email, user.firstName, verificationToken)
+      .then(() => console.log('✅ Verification email sent to', user.email))
+      .catch((emailError) => console.error('❌ Email sending failed (non-blocking):', emailError.message));
   } catch (error) {
     next(error);
   }

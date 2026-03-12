@@ -14,7 +14,7 @@ const socketAuth = async (socket, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId).select('_id firstName lastName');
+    const user = await User.findById(decoded.id).select('_id firstName lastName');
 
     if (!user) {
       socket.user = null;

@@ -21,7 +21,7 @@ export function TrustScore({ score = 0, total = 0, size = 'md' }) {
 }
 
 // ─── components/profile/ProfileCard.jsx ──────────────────────────────────────
-export function ProfileCard({ user, isOwnProfile, onEditClick }) {
+export function ProfileCard({ user, isOwnProfile, onEditClick, onMessage }) {
   const initials = `${user?.firstName?.charAt(0) || ''}${user?.lastName?.charAt(0) || ''}`.toUpperCase();
 
   return (
@@ -55,13 +55,23 @@ export function ProfileCard({ user, isOwnProfile, onEditClick }) {
               <p style={{ color: '#64748B', fontSize: 13, margin: 0 }}>🏫 {user?.university}</p>
               {user?.department && <p style={{ color: '#64748B', fontSize: 13, margin: '2px 0 0' }}>📚 {user.department} · Year {user.year}</p>}
             </div>
-            {isOwnProfile && (
-              <button onClick={onEditClick} style={{
-                background: 'transparent', border: '1px solid #334155',
-                borderRadius: 10, padding: '7px 14px', color: '#94A3B8',
-                cursor: 'pointer', fontSize: 13,
-              }}>✏️ Edit Profile</button>
-            )}
+            <div style={{ display: 'flex', gap: 8 }}>
+              {!isOwnProfile && onMessage && (
+                <button onClick={onMessage} style={{
+                  background: 'linear-gradient(135deg, #0EA5E9, #6366F1)', border: 'none',
+                  borderRadius: 10, padding: '7px 16px', color: '#fff',
+                  cursor: 'pointer', fontSize: 13, fontWeight: 600,
+                  fontFamily: "'DM Sans', sans-serif",
+                }}>💬 Message</button>
+              )}
+              {isOwnProfile && (
+                <button onClick={onEditClick} style={{
+                  background: 'transparent', border: '1px solid #334155',
+                  borderRadius: 10, padding: '7px 14px', color: '#94A3B8',
+                  cursor: 'pointer', fontSize: 13,
+                }}>✏️ Edit Profile</button>
+              )}
+            </div>
           </div>
 
           {user?.bio && (
@@ -76,6 +86,7 @@ export function ProfileCard({ user, isOwnProfile, onEditClick }) {
     </div>
   );
 }
+
 
 // ─── components/profile/ReviewList.jsx ───────────────────────────────────────
 export function ReviewList({ reviews, isLoading }) {

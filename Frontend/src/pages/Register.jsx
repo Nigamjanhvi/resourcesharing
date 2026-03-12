@@ -35,14 +35,36 @@ export default function Register() {
 
   const submit = async () => {
     if (!form.university) { toast.error('Please select your university'); return; }
+
+    // Deeper validation before submission
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
+    if (!passwordRegex.test(form.password)) {
+      toast.error('Password must contain uppercase, lowercase, and a number');
+      return;
+    }
+
     const { confirmPassword, ...data } = form;
-    const result = await register(data);
+
+    const submissionData = {
+      ...data,
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
+      email: data.email.trim().toLowerCase(),
+      university: data.university.trim(),
+      department: data.department ? data.department.trim() : undefined,
+      year: data.year ? Number(data.year) : undefined
+    };
+
+    const result = await register(submissionData);
     if (result.success) {
       toast.success('Account created! Welcome to UniShare 🎓');
       navigate('/dashboard');
     } else {
       toast.error(result.message || 'Registration failed');
-      setStep(1);
+      const lowerMsg = (result.message || '').toLowerCase();
+      if (lowerMsg.includes('password') || lowerMsg.includes('email')) {
+        setStep(1);
+      }
     }
   };
 

@@ -16,7 +16,7 @@ const reviewRoutes = require('./routes/reviews');
 const userRoutes = require('./routes/users');
 const notificationRoutes = require('./routes/notifications');
 
-const { authenticateSocket } = require('./middleware/socketAuth');
+const socketAuth = require('./middleware/socketAuth');
 const socketHandler = require('./socket/socketHandler');
 
 const app = express();
@@ -55,7 +55,7 @@ app.use('/api/', limiter);
 // Auth-specific stricter rate limit
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 100, // relaxed for development (was 10)
   message: { error: 'Too many authentication attempts.' },
 });
 
@@ -94,13 +94,15 @@ app.get('/api/health', (req, res) => {
 
 
 // Socket.io authentication and handlers
-io.use(authenticateSocket);
+io.use(socketAuth);
 socketHandler(io);
 
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.log('--- GLOBAL ERROR CAUGHT ---');
+  console.log('Error Message:', err.message);
+  console.log('Error Stack:', err.stack);
 
   res.status(err.statusCode || 500).json({
     success: false,
@@ -126,5 +128,15 @@ mongoose.connect(process.env.MONGODB_URI)
     process.exit(1);
   });
 
+
+process.on('unhandledRejection', (err) => {
+  console.error('🔥 UNHANDLED REJECTION! Shutting down...', err.name, err.message);
+  process.exit(1);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('💥 UNCAUGHT EXCEPTION! Shutting down...', err.name, err.message);
+  process.exit(1);
+});
 
 module.exports = { app, io };

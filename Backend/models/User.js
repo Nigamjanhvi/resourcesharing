@@ -116,9 +116,15 @@ userSchema.virtual('resourceCount', {
 
 // Hash password before saving
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 12);
-  next();
+  try {
+    if (!this.isModified('password')) return next();
+    console.log('🔐 Hashing password for:', this.email);
+    this.password = await bcrypt.hash(this.password, 12);
+    next();
+  } catch (error) {
+    console.error('❌ Error in User pre-save:', error);
+    next(error);
+  }
 });
 
 // Update trust score when ratingSum changes

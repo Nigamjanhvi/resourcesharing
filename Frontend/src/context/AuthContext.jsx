@@ -103,7 +103,12 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: 'AUTH_SUCCESS', payload: { user, token, refreshToken } });
       return { success: true };
     } catch (error) {
-      const message = error.response?.data?.message || 'Registration failed.';
+      let message = error.response?.data?.message;
+      if (!message && error.response?.data?.errors) {
+        message = error.response.data.errors.map(err => err.msg).join(', ');
+      }
+      if (!message) message = 'Registration failed.';
+
       dispatch({ type: 'AUTH_FAILURE', payload: message });
       return { success: false, message };
     }
